@@ -39,6 +39,7 @@ Wondering what affect an activity, symptom, or thing has on others in the Fatigu
 - [typescript](https://www.typescriptlang.org/)
 - [concurrently](https://www.npmjs.com/package/concurrently)
 - [mongodb-memory-server](https://github.com/nodkz/mongodb-memory-server)
+- [Prettier](https://prettier.io/)
 
 ## Contributing
 If you wish to contribute that's awesome 🙏
