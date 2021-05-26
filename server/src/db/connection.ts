@@ -4,18 +4,17 @@ import { MongoMemoryServer } from 'mongodb-memory-server'
 class DBConnection {
   constructor() {
     this.client = null
-    this.db = null
+    this._db = null
   }
   client: null | MongoClient
-  db: null | Db
+  _db: null | Db
   async init(dbName: string) {
     let mongoURI
     try {
       if (process.env.NODE_ENV === 'production') {
         if (process.env.MONGODB_URL) {
           mongoURI = process.env.MONGODB_URL
-        }
-        else {
+        } else {
           throw new Error('MONGODB_URL not set in .env file!')
         }
       } else {
@@ -23,13 +22,20 @@ class DBConnection {
         mongoURI = await mongoMemoryServer.getUri()
       }
       this.client = await MongoClient.connect(mongoURI)
-      this.db = this.client.db(dbName)
+      this._db = this.client.db(dbName)
       console.log(`MongoDB Connected...`)
     } catch (err) {
       console.error(err.message)
       // Exit process with failure
       process.exit(1)
     }
+  }
+
+  get db() {
+    if (!this._db) {
+      throw new Error('DBConnection not initialised!')
+    }
+    return this._db as Db
   }
 }
 
