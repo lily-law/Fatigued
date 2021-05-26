@@ -2,13 +2,13 @@ require('dotenv').config()
 import express from 'express'
 import path from 'path'
 import { json, urlencoded } from 'body-parser'
-import initDB from './db/init'
+import dbConnection from './db/connection'
 
 const app = express()
 const PORT = process.env.PORT || 8000
 
 // Initialise connection (production) or in memory (development) database
-initDB()
+dbConnection.init('fatigued')
 
 app.set('port', PORT)
 app.use(json())
