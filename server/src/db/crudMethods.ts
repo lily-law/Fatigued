@@ -1,16 +1,13 @@
-import { ObjectId } from "mongodb"
+import { ObjectId } from 'mongodb'
 import connection from '../db/connection'
+import IGenericModel from '../model/super/genericModel'
 const { db } = connection
 
-interface IGeneralModel {
-  new (props: any): any
-}
-
 export default class CRUDMethods<PropsType> {
-  constructor({collectionName, Model}: {collectionName: string, Model: IGeneralModel}) {
+  constructor({ collectionName, Model }: { collectionName: string; Model: IGenericModel }) {
     this.collectionName = collectionName
     this.Model = Model
-    this.name = this.collectionName[0].toUpperCase()+this.collectionName.substr(1)
+    this.name = this.collectionName[0].toUpperCase() + this.collectionName.substr(1)
   }
   collectionName
   Model
@@ -35,10 +32,24 @@ export default class CRUDMethods<PropsType> {
     const dbDoc = await db.collection(this.collectionName).findOne(id)
     return new this.Model(dbDoc)
   }
-  async readMany({ids, beforeDate, beforeDatePath, afterDate, afterDatePath, limit}: { ids?: Array<ObjectId>, beforeDate?: Date, beforeDatePath?: Array<string>, afterDate?: Date, afterDatePath?: Array<string>, limit?: number }) {
+  async readMany({
+    ids,
+    beforeDate,
+    beforeDatePath,
+    afterDate,
+    afterDatePath,
+    limit,
+  }: {
+    ids?: Array<ObjectId>
+    beforeDate?: Date
+    beforeDatePath?: Array<string>
+    afterDate?: Date
+    afterDatePath?: Array<string>
+    limit?: number
+  }) {
     let filter = {}
     if (ids) {
-      filter = { ...filter, _id : { $in : [1,2,3,4] } }
+      filter = { ...filter, _id: { $in: [1, 2, 3, 4] } }
     }
     if (beforeDate) {
       if (!beforeDatePath) {
@@ -53,20 +64,26 @@ export default class CRUDMethods<PropsType> {
       const filterDatePathData = (filter as any)[afterDatePath.join('.')] || {}
       filter = { ...filter, [afterDatePath.join('.')]: { ...filterDatePathData, $gte: afterDate } }
     }
-    const result = limit ? db.collection(this.collectionName).find(filter).limit(limit) : db.collection(this.collectionName).find(filter)
-    return await result.map(dbDoc => new this.Model(dbDoc))
+    const result = limit
+      ? db.collection(this.collectionName).find(filter).limit(limit)
+      : db.collection(this.collectionName).find(filter)
+    return await result.map((dbDoc) => new this.Model(dbDoc))
   }
-  async updateOne({id, patch}: {id: ObjectId, patch: PropsType}) {
+  async updateOne({ id, patch }: { id: ObjectId; patch: PropsType }) {
     const dbDoc = await db.collection(this.collectionName).findOne(id)
     const modelDoc = new this.Model(dbDoc)
     // Update any internal _ data first
-    Object.entries(patch).filter(([key]) => key[0] === '_').forEach(([key, value]) => {
-      modelDoc[key] = value
-    })
+    Object.entries(patch)
+      .filter(([key]) => key[0] === '_')
+      .forEach(([key, value]) => {
+        modelDoc[key] = value
+      })
     // Iterate each property so any setters can work
-    Object.entries(patch).filter(([key]) => key[0] !== '_').forEach(([key, value]) => {
-      modelDoc[key] = value
-    })
+    Object.entries(patch)
+      .filter(([key]) => key[0] !== '_')
+      .forEach(([key, value]) => {
+        modelDoc[key] = value
+      })
     const updatedData = await db.collection(this.collectionName).updateOne(id, modelDoc.toDBData())
     return new this.Model(updatedData)
   }
@@ -74,5 +91,4 @@ export default class CRUDMethods<PropsType> {
     const dbDoc = await db.collection(this.collectionName).deleteOne(id)
     return new this.Model(dbDoc)
   }
-
 }

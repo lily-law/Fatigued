@@ -31,13 +31,11 @@ export default class Auth extends BaseDoc {
   }
 }
 
-export const {
-  createAuth,
-  readAuth,
-  updateAuth,
-  deleteAuth,
-} = new CRUDMethods<IAuthProps>({collectionName: 'auth', Model: Auth}).methods
+export const { createAuth, readAuth, updateAuth, deleteAuth } = new CRUDMethods<IAuthProps>({
+  collectionName: 'auth',
+  Model: Auth,
+}).methods
 
-export async function findAuthByAuthoriserAndId({authoriser, id}: {authoriser: string, id: string}) {
+export async function findAuthByAuthoriserAndId({ authoriser, id }: { authoriser: string; id: string }) {
   const dbDoc = await db.collection('auth').findOne({ [`authoriser.${authoriser}.id`]: id })
 }

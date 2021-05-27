@@ -55,18 +55,26 @@ export interface IThread extends UserEntry {
 const defaultVoteOptions = {
   up: {
     up: {
-      count: 0
-    }
+      count: 0,
+    },
   },
   down: {
     down: {
-      count: 0
-    }
-  }
+      count: 0,
+    },
+  },
 }
 
 export default class Thread extends UserEntry {
-  constructor({ _id, timeCreated, owner, path = [], content, votes = { options: defaultVoteOptions }, comments }: IThreadProps) {
+  constructor({
+    _id,
+    timeCreated,
+    owner,
+    path = [],
+    content,
+    votes = { options: defaultVoteOptions },
+    comments,
+  }: IThreadProps) {
     super({ _id, timeCreated, owner, path })
     this._content = {
       timeUpdated: this.timeCreated,
@@ -75,13 +83,13 @@ export default class Thread extends UserEntry {
     this._votes = {
       count: 0,
       timeUpdated: this.timeCreated,
-      ...votes
+      ...votes,
     }
     this._comments = {
       log: [],
       count: 0,
       timeUpdated: this.timeCreated,
-      ...comments
+      ...comments,
     }
   }
   _content: IThread['content']
@@ -98,7 +106,7 @@ export default class Thread extends UserEntry {
     return this._content
   }
 
-  set votes(data: IThread["votes"]) {
+  set votes(data: IThread['votes']) {
     this._votes = {
       ...data,
       timeUpdated: new Date(),

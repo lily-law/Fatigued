@@ -1,5 +1,5 @@
-import CRUDMethods from "../db/crudMethods";
-import BaseDoc, { IBaseDocProps } from "./super/baseDoc";
+import CRUDMethods from '../db/crudMethods'
+import BaseDoc, { IBaseDocProps } from './super/baseDoc'
 
 export interface IUserFields extends IBaseDocProps {
   profile?: {
@@ -52,7 +52,7 @@ export default class User extends BaseDoc {
   set profile(data: IUser['profile']) {
     this._profile = {
       ...data,
-      timeUpdated: new Date()
+      timeUpdated: new Date(),
     }
   }
 
@@ -62,7 +62,7 @@ export default class User extends BaseDoc {
   set recentActivity(data: IUser['recentActivity']) {
     this._recentActivity = {
       ...data,
-      timeUpdated: new Date()
+      timeUpdated: new Date(),
     }
   }
 
@@ -76,10 +76,7 @@ export default class User extends BaseDoc {
   }
 }
 
-export const {
-  createUser,
-  readUser,
-  readUsers,
-  updateUser,
-  deleteUser,
-} = new CRUDMethods<IUserFields>({collectionName: 'user', Model: User}).methods
+export const { createUser, readUser, readUsers, updateUser, deleteUser } = new CRUDMethods<IUserFields>({
+  collectionName: 'user',
+  Model: User,
+}).methods
