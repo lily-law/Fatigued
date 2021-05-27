@@ -1,3 +1,1 @@
-export default interface IGenericModel {
-  new (props: any): any
-}
+export type GenericModelType<P, T> = new (p: P) => T

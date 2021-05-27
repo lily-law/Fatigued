@@ -1,32 +1,26 @@
+import assert from 'assert/strict'
 import { ObjectId } from 'mongodb'
 import connection from '../db/connection'
-import IGenericModel from '../model/super/genericModel'
+import BaseDoc from '../model/super/baseDoc'
+import { GenericModelType } from '../model/super/genericModel'
 const { db } = connection
 
-export default class CRUDMethods<PropsType> {
-  constructor({ collectionName, Model }: { collectionName: string; Model: IGenericModel }) {
+interface OutputMethods extends BaseDoc {
+  toDBData(): { [field: string]: any }
+}
+export default class CRUDMethods<PropsType, Model extends OutputMethods> {
+  constructor({ collectionName, Model }: { collectionName: string; Model: GenericModelType<PropsType, Model> }) {
     this.collectionName = collectionName
     this.Model = Model
-    this.name = this.collectionName[0].toUpperCase() + this.collectionName.substr(1)
   }
   collectionName
   Model
-  name
-
-  get methods() {
-    return {
-      [`create${this.name}`]: this.createOne,
-      [`read${this.name}`]: this.readOne,
-      [`read${this.name}s`]: this.readMany,
-      [`update${this.name}`]: this.updateOne,
-      [`delete${this.name}`]: this.deleteOne,
-    }
-  }
 
   async createOne(props: PropsType) {
     const modelDoc = new this.Model(props)
-    const dbDoc = await db.collection(this.collectionName).insertOne(modelDoc.toDBData())
-    return new this.Model(dbDoc)
+    const { insertedId } = await db.collection(this.collectionName).insertOne(modelDoc.toDBData())
+    assert.strict(modelDoc._id, insertedId)
+    return modelDoc
   }
   async readOne(id: ObjectId) {
     const dbDoc = await db.collection(this.collectionName).findOne(id)
@@ -49,7 +43,7 @@ export default class CRUDMethods<PropsType> {
   }) {
     let filter = {}
     if (ids) {
-      filter = { ...filter, _id: { $in: [1, 2, 3, 4] } }
+      filter = { ...filter, _id: { $in: ids } }
     }
     if (beforeDate) {
       if (!beforeDatePath) {
@@ -76,19 +70,24 @@ export default class CRUDMethods<PropsType> {
     Object.entries(patch)
       .filter(([key]) => key[0] === '_')
       .forEach(([key, value]) => {
+        /* @ts-ignore */
         modelDoc[key] = value
       })
     // Iterate each property so any setters can work
     Object.entries(patch)
       .filter(([key]) => key[0] !== '_')
       .forEach(([key, value]) => {
+        /* @ts-ignore */
         modelDoc[key] = value
       })
-    const updatedData = await db.collection(this.collectionName).updateOne(id, modelDoc.toDBData())
-    return new this.Model(updatedData)
+    const { upsertedId } = await db.collection(this.collectionName).updateOne(id, modelDoc.toDBData())
+    assert.strictEqual(upsertedId, modelDoc._id)
+    return modelDoc
   }
   async deleteOne(id: ObjectId) {
-    const dbDoc = await db.collection(this.collectionName).deleteOne(id)
-    return new this.Model(dbDoc)
+    const dbDoc = await db.collection(this.collectionName).findOne(id)
+    const modelDoc = new this.Model(dbDoc)
+    const { deletedCount } = await db.collection(this.collectionName).deleteOne(id)
+    return modelDoc
   }
 }
