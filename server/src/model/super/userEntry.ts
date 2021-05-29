@@ -1,10 +1,10 @@
 import { ObjectId } from 'mongodb'
 import BaseDoc, { IBaseDocProps } from './baseDoc'
-import { IPathObjectProps } from './pathObject'
+import PathObject from './pathObject'
 
 export interface IUserEntryProps extends IBaseDocProps {
   owner: { id: ObjectId }
-  path?: Array<IPathObjectProps>
+  path?: Array<PathObject>
 }
 
 export default class UserEntry extends BaseDoc {

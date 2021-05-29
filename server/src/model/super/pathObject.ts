@@ -1,11 +1,13 @@
 import { ObjectId } from 'mongodb'
 import { readComment } from '../comment'
-import { readPoll } from '../poll'
-import { readUser } from '../user'
-import { readVote } from '../vote'
+import Poll, { readPoll } from '../poll'
+import User, { readUser } from '../user'
+import Vote, { readVote } from '../vote'
+
+export type DocumentTypes = Vote | Poll | Comment | User
 
 export interface IPathObjectProps {
-  collectionName: string
+  collectionName: 'vote' | 'poll' | 'comment' | 'user'
   documentId: ObjectId
 }
 
@@ -17,7 +19,7 @@ export default class PathObject {
   collectionName
   documentId
 
-  async getDocument() {
+  async getDocument(): Promise<DocumentTypes> {
     switch (this.collectionName) {
       case 'vote': {
         return await readVote(this.documentId)
@@ -30,6 +32,9 @@ export default class PathObject {
       }
       case 'user': {
         return await readUser(this.documentId)
+      }
+      default: {
+        throw new Error(`Can not find document ${this.collectionName} ${this.documentId}`)
       }
     }
   }

@@ -1,6 +1,10 @@
 import { ObjectId } from 'mongodb'
 import CRUDMethods from '../db/crudMethods'
+import Comment from './comment'
+import Poll from './poll'
+import Thread from './super/thread'
 import UserEntry, { IUserEntryProps } from './super/userEntry'
+import { readUser } from './user'
 
 export interface IVoteProps extends IUserEntryProps {
   _id?: ObjectId
@@ -10,6 +14,8 @@ export interface IVoteProps extends IUserEntryProps {
   timeUpdated?: Date
   timeCreated?: Date
 }
+
+export type VotableType = Poll | Thread | Comment
 
 export default class Vote extends UserEntry {
   constructor({ _id, owner, path, options, timeUpdated, timeCreated }: IVoteProps) {
@@ -38,10 +44,35 @@ export default class Vote extends UserEntry {
   }
 }
 
-export const {
-  createVote, // TODO: on creating vote call addVote on parent + owner user
-  readVote,
-  readVotes,
-  updateVote, // TODO: on updating vote call updateVote on parent + owner user
-  deleteVote, // TODO: on deleting vote call updateVote on parent + owner user
-} = new CRUDMethods<IVoteProps>({collectionName: 'vote', Model: Vote}).methods
+const crudMethods = new CRUDMethods<IVoteProps, Vote>({ collectionName: 'vote', Model: Vote })
+
+export const { readOne: readVote, readMany: readVotes } = crudMethods
+
+export async function createVote(props: IVoteProps) {
+  const modelDoc = await crudMethods.createOne(props)
+  // update parent log
+  const parentDoc = (await modelDoc.parent.getDocument()) as VotableType
+  parentDoc.addVote(modelDoc)
+  // update owner log
+  const userDoc = await readUser(modelDoc.owner.id)
+  userDoc.addVote(modelDoc)
+}
+export async function updateVote({ id, patch }: { id: ObjectId; patch: IVoteProps }) {
+  const oldVote = await crudMethods.readOne(id)
+  const newVote = await crudMethods.updateOne({ id, patch })
+  // update parent log
+  const parentDoc = (await newVote.parent.getDocument()) as VotableType
+  parentDoc.updateVote({ oldVote, newVote })
+  // update owner log
+  const userDoc = await readUser(newVote.owner.id)
+  userDoc.updateVote(newVote)
+}
+export async function deleteVote(id: ObjectId) {
+  const modelDoc = await crudMethods.deleteOne(id)
+  // update parent log
+  const parentDoc = (await modelDoc.parent.getDocument()) as VotableType
+  parentDoc.removeVote(modelDoc)
+  // update owner log
+  const userDoc = await readUser(modelDoc.owner.id)
+  userDoc.removeVote(modelDoc)
+}

@@ -1,8 +1,8 @@
 import Comment from '../comment'
-import Vote from '../vote'
+import applyMixins from '../mixin/applyMixin'
+import CommentLogQueue from '../mixin/commentLogQueue'
+import VoteMethods from '../mixin/voteMethods'
 import UserEntry, { IUserEntryProps } from './userEntry'
-import connection from '../../db/connection'
-const { db } = connection
 
 export interface IThreadProps extends IUserEntryProps {
   content: {
@@ -65,7 +65,7 @@ const defaultVoteOptions = {
   },
 }
 
-export default class Thread extends UserEntry {
+class Thread extends UserEntry {
   constructor({
     _id,
     timeCreated,
@@ -115,28 +115,6 @@ export default class Thread extends UserEntry {
   get votes() {
     return this._votes
   }
-  addVote(vote: Vote) {
-    for (let [option, value] of Object.entries(vote.options)) {
-      if (!this._votes.options[option]?.[value]) {
-        this._votes.options[option] = { [value]: { count: 0 } }
-      }
-      this._votes.options[option][value].count++
-    }
-    this._votes.count++
-  }
-  removeVote(vote: Vote) {
-    for (let [option, value] of Object.entries(vote.options)) {
-      if (!this._votes.options[option]?.[value]) {
-        this._votes.options[option] = { [value]: { count: 0 } }
-      }
-      this._votes.options[option][value].count !== 0 && this._votes.options[option][value].count--
-    }
-    this._votes.count > 0 && this._votes.count--
-  }
-  updateVote({ oldVote, newVote }: { oldVote: Vote; newVote: Vote }) {
-    this.removeVote(oldVote)
-    this.addVote(newVote)
-  }
 
   set comments(data: IThread['comments']) {
     this._comments = {
@@ -147,26 +125,9 @@ export default class Thread extends UserEntry {
   get comments() {
     return this._comments
   }
-  addComment(comment: Comment) {
-    this.comments.log = [comment, ...this.comments.log.slice(0, 19)]
-    this.comments.count++
-  }
-  async removeComment(comment: Comment) {
-    const logLength = this.comments.log.length
-    if (logLength > 0) {
-      let newCommentsLog = this.comments.log.filter(({ _id }) => comment._id.toHexString() !== _id.toHexString())
-      this.comments.count--
-      if (newCommentsLog.length < logLength) { 
-        // comment in log was found and removed so replace it
-        const lastLogComment = newCommentsLog[newCommentsLog.length]
-        const comment = await db.collection('comment').findOne({ 'content.timeUpdated': { $lt: lastLogComment.content.timeUpdated } })
-        newCommentsLog = [...newCommentsLog, comment]
-      }
-      this.comments.log = newCommentsLog
-    }
-  }
-  updateComment(comment: Comment) {
-    let newCommentsLog = this.comments.log.filter(({ _id }) => comment._id.toHexString() !== _id.toHexString())
-    this.comments.log = [comment, ...newCommentsLog.slice(0, 19)]
-  }
 }
+
+// Add queued logging methods to prototype
+interface Thread extends VoteMethods, CommentLogQueue {}
+applyMixins(Thread, [VoteMethods, CommentLogQueue])
+export default Thread

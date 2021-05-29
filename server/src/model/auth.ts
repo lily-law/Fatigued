@@ -9,7 +9,6 @@ export interface IAuthProps {
   authoriser: {
     google: {
       id: string
-      oauth: string
     }
   }
 }
@@ -31,11 +30,18 @@ export default class Auth extends BaseDoc {
   }
 }
 
-export const { createAuth, readAuth, updateAuth, deleteAuth } = new CRUDMethods<IAuthProps>({
+export const {
+  createOne: createAuth,
+  readOne: readAuth,
+  updateOne: updateAuth,
+  deleteOne: deleteAuth,
+} = new CRUDMethods<IAuthProps, Auth>({
   collectionName: 'auth',
   Model: Auth,
-}).methods
+})
 
 export async function findAuthByAuthoriserAndId({ authoriser, id }: { authoriser: string; id: string }) {
   const dbDoc = await db.collection('auth').findOne({ [`authoriser.${authoriser}.id`]: id })
+  const result: Auth | false = dbDoc && new Auth(dbDoc)
+  return result
 }

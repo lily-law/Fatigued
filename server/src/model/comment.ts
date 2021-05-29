@@ -1,7 +1,12 @@
+import { ObjectId } from 'mongodb'
 import CRUDMethods from '../db/crudMethods'
+import Poll from './poll'
 import Thread, { IThreadProps } from './super/thread'
+import { readUser } from './user'
 
 export interface ICommentProps extends IThreadProps {}
+
+export type CommentableType = Poll | Comment
 
 export default class Comment extends Thread {
   toResData() {
@@ -14,10 +19,34 @@ export default class Comment extends Thread {
   }
 }
 
-export const {
-  createComment, // TODO: on creating comment call addVote on parent + owner user
-  readComment,
-  readComments,
-  updateComment, // TODO: on updating comment call addVote on parent + owner user
-  deleteComment, // TODO: on deleting comment call addVote on parent + owner user
-} = new CRUDMethods<ICommentProps>({ collectionName: 'comment', Model: Comment }).methods
+const crudMethods = new CRUDMethods<ICommentProps, Comment>({ collectionName: 'comment', Model: Comment })
+
+export const { readOne: readComment, readMany: readComments } = crudMethods
+
+export async function createComment(props: ICommentProps) {
+  const modelDoc = await crudMethods.createOne(props)
+  // update parent log
+  const parentDoc = (await modelDoc.parent.getDocument()) as CommentableType
+  parentDoc.addComment(modelDoc)
+  // update owner log
+  const userDoc = await readUser(modelDoc.owner.id)
+  userDoc.addComment(modelDoc)
+}
+export async function updateComment({ id, patch }: { id: ObjectId; patch: ICommentProps }) {
+  const newComment = await crudMethods.updateOne({ id, patch })
+  // update parent log
+  const parentDoc = (await newComment.parent.getDocument()) as CommentableType
+  parentDoc.updateComment(newComment)
+  // update owner log
+  const userDoc = await readUser(newComment.owner.id)
+  userDoc.updateComment(newComment)
+}
+export async function deleteComment(id: ObjectId) {
+  const modelDoc = await crudMethods.deleteOne(id)
+  // update parent log
+  const parentDoc = (await modelDoc.parent.getDocument()) as CommentableType
+  parentDoc.removeComment(modelDoc)
+  // update owner log
+  const userDoc = await readUser(modelDoc.owner.id)
+  userDoc.removeComment(modelDoc)
+}
