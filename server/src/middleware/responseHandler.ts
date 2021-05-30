@@ -1,9 +1,33 @@
 import { Request, Response } from 'express'
 
-export function handleDocumentResponse(req: Request, res: Response) {
-  if (res.locals.data) {
-    res.send(res.locals.data)
+export function handleGetDocumentResponse(req: Request, res: Response) {
+  if (res.locals.resData) {
+    res.send(res.locals.resData)
   } else {
     res.status(404).end()
+  }
+}
+
+export function handlePostDocumentResponse(req: Request, res: Response) {
+  if (res.locals.resData) {
+    res.send(res.locals.resData)
+  } else {
+    res.status(500).end()
+  }
+}
+
+export function handlePatchDocumentResponse(req: Request, res: Response) {
+  if (res.locals.resData) {
+    res.send(res.locals.resData)
+  } else {
+    res.status(500).end()
+  }
+}
+
+export function handleDeleteDocumentResponse(req: Request, res: Response) {
+  if (res.locals.resData) {
+    res.send(res.locals.resData)
+  } else {
+    res.status(500).end()
   }
 }
