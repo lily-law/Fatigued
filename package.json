@@ -8,7 +8,9 @@
     "dev": "concurrently \"npm run dev --prefix server\" \"npm start --prefix client\"",
     "start": "npm start --prefix server",
     "build": "npm build --prefix server && npm build --prefix client",
-    "install": "npm install --prefix server && npm install --prefix client",
+    "install:client": "npm install --prefix client",
+    "install:server": "npm install --prefix server",
+    "install:all": "npm install && npm run install:server && npm run install:client",
     "prettier": "prettier '{server,client}/src/**/*.{ts,tsx}'",
     "prettier:fix": "prettier --write '{server,client}/src/**/*.{ts,tsx}'"
   },

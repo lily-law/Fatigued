@@ -25,13 +25,16 @@ Wondering what affect an activity, symptom, or thing has on others in the Fatigu
 
 ## Local dev setup
 1. Clone this repo
-1. From root run `npm install`
+1. From root run `npm run install:all`
 1. Run `npm run dev`
 
 ## Dependencies
 - [React-Static](https://github.com/react-static/react-static)
 - [Express](https://expressjs.com/)
 - [mongoDB](https://www.mongodb.com/)
+- [cookie-session](https://www.npmjs.com/package/cookie-session)
+- [passport](https://www.npmjs.com/package/passport)
+- [passport-google-oauth20](https://www.npmjs.com/package/passport-google-oauth20)
 ### Development only
 - [dotenv](https://www.npmjs.com/package/dotenv)
 - [nodemon](https://www.npmjs.com/package/nodemon)
