@@ -56,6 +56,7 @@ export async function createVote(props: IVoteProps) {
   // update owner log
   const userDoc = await readUser(modelDoc.owner.id)
   userDoc.addVote(modelDoc)
+  return modelDoc
 }
 export async function updateVote({ id, patch }: { id: ObjectId; patch: IVoteProps }) {
   const oldVote = await crudMethods.readOne(id)
@@ -66,6 +67,7 @@ export async function updateVote({ id, patch }: { id: ObjectId; patch: IVoteProp
   // update owner log
   const userDoc = await readUser(newVote.owner.id)
   userDoc.updateVote(newVote)
+  return newVote
 }
 export async function deleteVote(id: ObjectId) {
   const modelDoc = await crudMethods.deleteOne(id)
@@ -75,4 +77,5 @@ export async function deleteVote(id: ObjectId) {
   // update owner log
   const userDoc = await readUser(modelDoc.owner.id)
   userDoc.removeVote(modelDoc)
+  return modelDoc
 }

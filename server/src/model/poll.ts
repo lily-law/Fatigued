@@ -25,16 +25,19 @@ export async function createPoll(props: IPollProps) {
   // update owner log
   const userDoc = await readUser(modelDoc.owner.id)
   userDoc.addPoll(modelDoc)
+  return modelDoc
 }
 export async function updatePoll({ id, patch }: { id: ObjectId; patch: IPollProps }) {
   const newPoll = await crudMethods.updateOne({ id, patch })
   // update owner log
   const userDoc = await readUser(newPoll.owner.id)
   userDoc.updatePoll(newPoll)
+  return newPoll
 }
 export async function deletePoll(id: ObjectId) {
   const modelDoc = await crudMethods.deleteOne(id)
   // update owner log
   const userDoc = await readUser(modelDoc.owner.id)
   userDoc.removePoll(modelDoc)
+  return modelDoc
 }

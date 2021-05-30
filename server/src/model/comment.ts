@@ -31,6 +31,7 @@ export async function createComment(props: ICommentProps) {
   // update owner log
   const userDoc = await readUser(modelDoc.owner.id)
   userDoc.addComment(modelDoc)
+  return modelDoc
 }
 export async function updateComment({ id, patch }: { id: ObjectId; patch: ICommentProps }) {
   const newComment = await crudMethods.updateOne({ id, patch })
@@ -40,6 +41,7 @@ export async function updateComment({ id, patch }: { id: ObjectId; patch: IComme
   // update owner log
   const userDoc = await readUser(newComment.owner.id)
   userDoc.updateComment(newComment)
+  return newComment
 }
 export async function deleteComment(id: ObjectId) {
   const modelDoc = await crudMethods.deleteOne(id)
@@ -49,4 +51,5 @@ export async function deleteComment(id: ObjectId) {
   // update owner log
   const userDoc = await readUser(modelDoc.owner.id)
   userDoc.removeComment(modelDoc)
+  return modelDoc
 }
