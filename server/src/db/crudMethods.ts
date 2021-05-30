@@ -61,7 +61,7 @@ export default class CRUDMethods<PropsType, Model extends OutputMethods> {
     const result = limit
       ? db.collection(this.collectionName).find(filter).limit(limit)
       : db.collection(this.collectionName).find(filter)
-    return await result.map((dbDoc) => new this.Model(dbDoc))
+    return await result.map((dbDoc): Model => new this.Model(dbDoc))
   }
   async updateOne({ id, patch }: { id: ObjectId; patch: PropsType }) {
     const dbDoc = await db.collection(this.collectionName).findOne(id)
