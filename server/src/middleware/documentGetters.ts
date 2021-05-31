@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
-import Comment, { readComment, readComments } from '../model/comment'
-import Poll, { readPoll, readPolls } from '../model/poll'
-import User, { readUser, readUsers } from '../model/user'
-import Vote, { readVote, readVotes } from '../model/vote'
+import { readComment, readComments } from '../model/comment'
+import { readPoll, readPolls } from '../model/poll'
+import { readUser, readUsers } from '../model/user'
+import { readVote, readVotes } from '../model/vote'
 import { pathToCollectionItem, pathToCollectionRoot } from './helpers/collectionNameByRoute'
 
 const readOperatorsById = {

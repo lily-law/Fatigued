@@ -6,15 +6,15 @@ import { deleteVote } from '../model/vote'
 import { pathToCollectionItem } from './helpers/collectionNameByRoute'
 
 const deleteOperators = {
-    comment: deleteComment,
-    poll: deletePoll,
-    user: deleteUser,
-    vote: deleteVote,
+  comment: deleteComment,
+  poll: deletePoll,
+  user: deleteUser,
+  vote: deleteVote,
 }
 
 export async function removeDocument(req: Request, res: Response, next: NextFunction) {
-    const { id, collectionName } = pathToCollectionItem(req, res)
-    const doc = await deleteOperators[collectionName](id)
-    res.locals.data = doc
-    next()
+  const { id, collectionName } = pathToCollectionItem(req, res)
+  const doc = await deleteOperators[collectionName](id)
+  res.locals.data = doc
+  next()
 }

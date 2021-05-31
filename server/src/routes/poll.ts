@@ -3,7 +3,12 @@ import { getDocumentById, getDocumentsByQuery } from '../middleware/documentGett
 import { removeDocument } from '../middleware/documentRemovers'
 import { setPatchDocument, setPostDocument } from '../middleware/documentSetters'
 import { documentsToResData } from '../middleware/doucmentsToResData'
-import { handleDeleteDocumentResponse, handleGetDocumentResponse, handlePatchDocumentResponse, handlePostDocumentResponse } from '../middleware/responseHandler'
+import {
+  handleDeleteDocumentResponse,
+  handleGetDocumentResponse,
+  handlePatchDocumentResponse,
+  handlePostDocumentResponse,
+} from '../middleware/responseHandler'
 
 const router = express.Router()
 
