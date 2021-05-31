@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from 'express'
+import User from '../model/user'
+import { getDocumentById } from './documentGetters'
 
-export default function userOwnsResource(req: Request, res: Response, next: NextFunction) {
-  const documents = Array.isArray(res.locals.data) ? res.locals.data : [res.locals.data]
-  const userHasAuth = documents.every(({ owner }) => owner?.id === req.user._id)
+export async function userOwnsDocument(req: Request, res: Response, next: NextFunction) {
+  const document = await getDocumentById(req, res)
+  const ownerId = document instanceof User ? document._id : document.owner.id
+  const userHasAuth = ownerId && req.user?._id && ownerId === req.user._id
   if (!userHasAuth) {
     res.status(403).end()
     return

@@ -19,16 +19,18 @@ const readOperatorsByQuery = {
   votes: readVotes,
 }
 
-export async function getDocumentById(req: Request, res: Response, next: NextFunction) {
+export async function getDocumentById(req: Request, res: Response, next?: NextFunction) {
   const { id, collectionName } = pathToCollectionItem(req, res)
   const doc = await readOperatorsById[collectionName](id)
   res.locals.data = doc
-  next()
+  next?.()
+  return doc
 }
 
-export async function getDocumentsByQuery(req: Request, res: Response, next: NextFunction) {
+export async function getDocumentsByQuery(req: Request, res: Response, next?: NextFunction) {
   const collectionName = pathToCollectionRoot(req, res)
   const docs = await (await readOperatorsByQuery[collectionName]({ ...req.query })).toArray()
   res.locals.data = docs
-  next()
+  next?.()
+  return docs
 }

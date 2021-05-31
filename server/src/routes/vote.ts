@@ -17,7 +17,3 @@ router.get('/:id', getDocumentById, handleResponse)
 router.patch('/:id', isAuthed, userOwnsDocument, setPatchDocument, handleResponse)
 
 router.delete('/:id', isAuthed, userOwnsDocument, removeDocument, handleResponse)
-
-router.use('/:id/vote')
-
-router.use('/:id/comment')
