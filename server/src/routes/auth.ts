@@ -36,6 +36,12 @@ router.get(
   },
 )
 
+router.get('/logout', function (req, res) {
+  req.logOut()
+  req.session = null
+  res.status(200).end()
+})
+
 async function authUser(accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) {
   const auth = await findAuthByAuthoriserAndId({ authoriser: 'google', id: profile.id })
   let id
@@ -79,3 +85,5 @@ passport.deserializeUser(async function (_id: ObjectId, cb) {
   }
   cb(err, user)
 })
+
+export default router
