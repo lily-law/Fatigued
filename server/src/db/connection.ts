@@ -1,5 +1,4 @@
 import { Db, MongoClient } from 'mongodb'
-import { MongoMemoryServer } from 'mongodb-memory-server'
 
 class DBConnection {
   constructor() {
@@ -11,15 +10,10 @@ class DBConnection {
   async init(dbName: string) {
     let mongoURI
     try {
-      if (process.env.NODE_ENV === 'production') {
-        if (process.env.MONGODB_URL) {
-          mongoURI = process.env.MONGODB_URL
-        } else {
-          throw new Error('MONGODB_URL not set in .env file!')
-        }
+      if (process.env.MONGODB_URL) {
+        mongoURI = process.env.MONGODB_URL
       } else {
-        const mongoMemoryServer = new MongoMemoryServer()
-        mongoURI = await mongoMemoryServer.getUri()
+        throw new Error('MONGODB_URL not set in .env file!')
       }
       this.client = await MongoClient.connect(mongoURI)
       this._db = this.client.db(dbName)

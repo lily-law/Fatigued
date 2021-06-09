@@ -19,7 +19,6 @@
   "devDependencies": {
     "@types/mongodb": "^3.6.16",
     "concurrently": "^6.1.0",
-    "mongodb-memory-server": "^6.9.6",
     "prettier": "2.3.0"
   },
   "dependencies": {
