@@ -9,7 +9,11 @@ function collectionNameByRoute(req: Request, res: Response, expectRootPath: bool
   const pathStr = req.originalUrl
   // remove ? query
   // split by /
-  const pathArr = pathStr.substr(0, pathStr.indexOf('?')).split('/').reverse()
+  const pathArr = pathStr
+    .substr(0, pathStr.indexOf('?'))
+    .split('/')
+    .filter((path) => path)
+    .reverse()
   let pathsSearched = 0
   // search for latest valid collection name
   for (let path of pathArr) {
@@ -19,7 +23,7 @@ function collectionNameByRoute(req: Request, res: Response, expectRootPath: bool
       const isRootPath = pathsSearched % 2 === 1
       if (!isRootPath) {
         return path
-      } else if (!expectRootPath) {
+      } else if (expectRootPath) {
         return `${path}s`
       } else {
         throw new Error(`Was expecting to find a root path on ${path} in ${pathStr}`)
