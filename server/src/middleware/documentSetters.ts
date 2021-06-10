@@ -15,12 +15,12 @@ const postOperators = {
 }
 
 export async function setPostDocument(req: Request, res: Response, next: NextFunction) {
-    const collectionName = pathToCollectionRoot(req, res)
-    const bodyData = matchedData(req, { locations: ['body'], includeOptionals: true })
-    const data: any = shallowRemoveFalseyFields(bodyData)
-    const doc = await postOperators[collectionName](data)
-    res.locals.data = doc
-    next()
+  const collectionName = pathToCollectionRoot(req, res)
+  const bodyData = matchedData(req, { locations: ['body'], includeOptionals: true })
+  const data: any = shallowRemoveFalseyFields(bodyData)
+  const doc = await postOperators[collectionName](data)
+  res.locals.data = doc
+  next()
 }
 
 const updateOperators = {
@@ -31,10 +31,10 @@ const updateOperators = {
 }
 
 export async function setPatchDocument(req: Request, res: Response, next: NextFunction) {
-    const { id, collectionName } = pathToCollectionItem(req, res)
-    const bodyData = matchedData(req, { locations: ['body'], includeOptionals: true })
-    const data: any = shallowRemoveFalseyFields(bodyData)
-    const doc = await updateOperators[collectionName]({ id, patch: data })
-    res.locals.data = doc
-    next()
+  const { id, collectionName } = pathToCollectionItem(req, res)
+  const bodyData = matchedData(req, { locations: ['body'], includeOptionals: true })
+  const data: any = shallowRemoveFalseyFields(bodyData)
+  const doc = await updateOperators[collectionName]({ id, patch: data })
+  res.locals.data = doc
+  next()
 }
