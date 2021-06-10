@@ -12,16 +12,21 @@ export default () => {
             <li key={id}>
               <p>{content.text}</p>
               {Object.entries(votes.options).map(([key, vals]) => {
-                const labels = Object.keys(vals)
+                const keyVals = Object.entries(vals)
                 return (
-                  <form key={id + key}>
-                    <legend>{key}</legend>
-                    {labels.length === 1 ? (
-                      <input type="checkbox" />
+                  <div key={id + key}>
+                    <h4>{key}</h4>
+                    {keyVals.length === 1 ? (
+                      <p>{keyVals[0][1]}</p>
                     ) : (
-                      <input type="range" min={labels[0]} max={labels[labels.length]} />
+                      keyVals.map(([label, val]) => (
+                        <div key={id + key + label}>
+                          <h3>{label}</h3>
+                          <progress value={val.toString()} max={votes.count} />
+                        </div>
+                      ))
                     )}
-                  </form>
+                  </div>
                 )
               })}
             </li>

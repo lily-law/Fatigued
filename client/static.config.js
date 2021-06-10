@@ -1,28 +1,34 @@
 import axios from 'axios'
 import path from 'path'
-// import { Post } from './types'
+import React from 'react'
+// import { IPoll } from './types'
 
 // Typescript support in static.config.js is not yet supported, but is coming in a future update!
 
 export default {
   entry: path.join(__dirname, 'src', 'index.tsx'),
   getRoutes: async () => {
-    const { data: posts } /* :{ data: Post[] } */ = await axios.get(
-      'https://jsonplaceholder.typicode.com/posts'
+    const { data: polls } /* :{ data: IPoll[] } */ = await axios.get(
+      'http://localhost:8000/poll?limit=20'
     )
     return [
       {
-        path: '/blog',
+        path: '/',
         getData: () => ({
-          posts,
+          polls,
         }),
-        children: posts.map((post /* : Post */) => ({
-          path: `/post/${post.id}`,
-          template: 'src/containers/Post',
-          getData: () => ({
-            post,
-          }),
-        })),
+      },
+      {
+        path: '/stats',
+        getData: () => ({
+          polls,
+        }),
+      },
+      {
+        path: '/discuss',
+        getData: () => ({
+          polls,
+        }),
       },
     ]
   },
@@ -37,4 +43,19 @@ export default {
     require.resolve('react-static-plugin-reach-router'),
     require.resolve('react-static-plugin-sitemap'),
   ],
+  Document: ({
+    Html,
+    Head,
+    Body,
+    children,
+    state: { siteData, renderMeta },
+  }) => (
+    <Html lang="en">
+      <Head>
+        <meta charSet="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+      </Head>
+      <Body>{children}</Body>
+    </Html>
+  ),
 }
