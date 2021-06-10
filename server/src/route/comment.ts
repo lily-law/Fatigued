@@ -6,7 +6,7 @@ import isAuthed from '../middleware/isAuthed'
 import { handleResponse } from '../middleware/responseHandler'
 import { userOwnsDocument } from '../middleware/userOwnsResource'
 import voteRoutes from './vote'
-import { body, param } from 'express-validator'
+import { body, param, query } from 'express-validator'
 import { ObjectId } from 'mongodb'
 
 const router = express.Router({ mergeParams: true })
@@ -23,7 +23,29 @@ router.post(
   handleResponse,
 )
 
-router.get('/', getDocumentsByQuery, handleResponse)
+router.get(
+  '/',
+  query('ids.*')
+    .optional()
+    .isMongoId()
+    .customSanitizer((value) => (Array.isArray(value) ? value : [value])),
+  query('beforeDate')
+    .optional()
+    .isDate()
+    .customSanitizer((value) => new Date(value)),
+  query('beforeDatePath').optional().escape(),
+  query('afterDate')
+    .optional()
+    .isDate()
+    .customSanitizer((value) => new Date(value)),
+  query('afterDatePath').optional().escape(),
+  query('limit')
+    .optional()
+    .isNumeric()
+    .customSanitizer((value) => parseInt(value)),
+  getDocumentsByQuery,
+  handleResponse,
+)
 
 router.get(
   '/:id',
