@@ -9,6 +9,11 @@ export interface ICommentProps extends IThreadProps {}
 export type CommentableType = Poll | Comment
 
 export default class Comment extends Thread {
+  constructor(props: ICommentProps) {
+    super(props)
+    this.toResData = this.toResData.bind(this)
+    this.toDBData = this.toDBData.bind(this)
+  }
   toResData() {
     const { _id: id, owner, parent, content, votes, comments, timeCreated } = this
     return { id, owner, parent, content, votes, comments, timeCreated }

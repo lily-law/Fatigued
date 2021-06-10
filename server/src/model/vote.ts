@@ -22,6 +22,8 @@ export default class Vote extends UserEntry {
     super({ _id, timeCreated, owner, path })
     this._options = options
     this.timeUpdated = timeUpdated ? new Date(timeUpdated) : this.timeCreated
+    this.toResData = this.toResData.bind(this)
+    this.toDBData = this.toDBData.bind(this)
   }
   _options
   timeUpdated

@@ -6,6 +6,11 @@ import { readUser } from './user'
 export interface IPollProps extends IThreadProps {}
 
 export default class Poll extends Thread {
+  constructor(props: IPollProps) {
+    super(props)
+    this.toResData = this.toResData.bind(this)
+    this.toDBData = this.toDBData.bind(this)
+  }
   toResData() {
     const { _id: id, owner, content, votes, comments, timeCreated } = this
     return { id, owner, content, votes, comments, timeCreated }

@@ -19,6 +19,7 @@ export default class Auth extends BaseDoc {
     this.owner = owner
     this.authoriser = authoriser
     this.timeUpdated = this.timeCreated
+    this.toDBData = this.toDBData.bind(this)
   }
   owner
   authoriser

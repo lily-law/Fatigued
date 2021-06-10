@@ -41,6 +41,9 @@ class User extends BaseDoc {
     this.polls = polls
     this.votes = votes
     this.comments = comments
+    this.setProfile = this.setProfile.bind(this)
+    this.toResData = this.toResData.bind(this)
+    this.toDBData = this.toDBData.bind(this)
   }
   _profile: IUser['profile']
   polls

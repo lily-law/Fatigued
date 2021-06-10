@@ -4,6 +4,7 @@ class DBConnection {
   constructor() {
     this.client = null
     this._db = null
+    this.init = this.init.bind(this)
   }
   client: null | MongoClient
   _db: null | Db

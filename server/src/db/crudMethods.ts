@@ -12,6 +12,11 @@ export default class CRUDMethods<PropsType, Model extends OutputMethods> {
   constructor({ collectionName, Model }: { collectionName: string; Model: GenericModelType<PropsType, Model> }) {
     this.collectionName = collectionName
     this.Model = Model
+    this.createOne = this.createOne.bind(this)
+    this.readOne = this.readOne.bind(this)
+    this.readMany = this.readMany.bind(this)
+    this.updateOne = this.updateOne.bind(this)
+    this.deleteOne = this.deleteOne.bind(this)
   }
   collectionName
   Model

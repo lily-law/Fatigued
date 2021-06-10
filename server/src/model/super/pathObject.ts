@@ -15,6 +15,7 @@ export default class PathObject {
   constructor({ collectionName, documentId }: IPathObjectProps) {
     this.collectionName = collectionName
     this.documentId = documentId
+    this.getDocument = this.getDocument.bind(this)
   }
   collectionName
   documentId
