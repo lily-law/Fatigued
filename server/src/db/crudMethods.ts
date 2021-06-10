@@ -39,9 +39,9 @@ export default class CRUDMethods<PropsType, Model extends OutputMethods> {
   }: {
     ids?: Array<ObjectId>
     beforeDate?: Date
-    beforeDatePath?: Array<string>
+    beforeDatePath?: string
     afterDate?: Date
-    afterDatePath?: Array<string>
+    afterDatePath?: string
     limit?: number
   }) {
     let filter = {}
@@ -52,14 +52,14 @@ export default class CRUDMethods<PropsType, Model extends OutputMethods> {
       if (!beforeDatePath) {
         throw Error('Must specify beforeDatePath when using beforeDate query filter!')
       }
-      filter = { ...filter, [beforeDatePath.join('.')]: { $lt: beforeDate } }
+      filter = { ...filter, [beforeDatePath]: { $lt: beforeDate } }
     }
     if (afterDate) {
       if (!afterDatePath) {
         throw Error('Must specify afterDatePath when using afterDate query filter!')
       }
-      const filterDatePathData = (filter as any)[afterDatePath.join('.')] || {}
-      filter = { ...filter, [afterDatePath.join('.')]: { ...filterDatePathData, $gte: afterDate } }
+      const filterDatePathData = (filter as any)[afterDatePath] || {}
+      filter = { ...filter, [afterDatePath]: { ...filterDatePathData, $gte: afterDate } }
     }
     const result = limit
       ? connection.db.collection(this.collectionName).find(filter).limit(limit)
