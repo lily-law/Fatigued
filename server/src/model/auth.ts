@@ -2,7 +2,6 @@ import { ObjectId } from 'mongodb'
 import CRUDMethods from '../db/crudMethods'
 import BaseDoc from './super/baseDoc'
 import connection from '../db/connection'
-const { db } = connection
 
 export interface IAuthProps {
   owner: { id: ObjectId }
@@ -42,7 +41,7 @@ export const {
 })
 
 export async function findAuthByAuthoriserAndId({ authoriser, id }: { authoriser: string; id: string }) {
-  const dbDoc = await db.collection('auth').findOne({ [`authoriser.${authoriser}.id`]: id })
+  const dbDoc = await connection.db.collection('auth').findOne({ [`authoriser.${authoriser}.id`]: id })
   const result: Auth | false = dbDoc && new Auth(dbDoc)
   return result
 }

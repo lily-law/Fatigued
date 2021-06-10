@@ -3,7 +3,6 @@ import { ObjectId } from 'mongodb'
 import connection from '../db/connection'
 import BaseDoc from '../model/super/baseDoc'
 import { GenericModelType } from '../model/super/genericModel'
-const { db } = connection
 
 interface OutputMethods extends BaseDoc {
   toDBData(): { [field: string]: any }
@@ -20,15 +19,14 @@ export default class CRUDMethods<PropsType, Model extends OutputMethods> {
   }
   collectionName
   Model
-
   async createOne(props: PropsType) {
     const modelDoc = new this.Model(props)
-    const { insertedId } = await db.collection(this.collectionName).insertOne(modelDoc.toDBData())
+    const { insertedId } = await connection.db.collection(this.collectionName).insertOne(modelDoc.toDBData())
     assert.strict(modelDoc._id, insertedId)
     return modelDoc
   }
   async readOne(id: ObjectId) {
-    const dbDoc = await db.collection(this.collectionName).findOne(id)
+    const dbDoc = await connection.db.collection(this.collectionName).findOne(id)
     return new this.Model(dbDoc)
   }
   async readMany({
@@ -64,12 +62,12 @@ export default class CRUDMethods<PropsType, Model extends OutputMethods> {
       filter = { ...filter, [afterDatePath.join('.')]: { ...filterDatePathData, $gte: afterDate } }
     }
     const result = limit
-      ? db.collection(this.collectionName).find(filter).limit(limit)
-      : db.collection(this.collectionName).find(filter)
+      ? connection.db.collection(this.collectionName).find(filter).limit(limit)
+      : connection.db.collection(this.collectionName).find(filter)
     return await result.map((dbDoc): Model => new this.Model(dbDoc))
   }
   async updateOne({ id, patch }: { id: ObjectId; patch: PropsType }) {
-    const dbDoc = await db.collection(this.collectionName).findOne(id)
+    const dbDoc = await connection.db.collection(this.collectionName).findOne(id)
     const modelDoc = new this.Model(dbDoc)
     // Update any internal _ data first
     Object.entries(patch)
@@ -85,14 +83,14 @@ export default class CRUDMethods<PropsType, Model extends OutputMethods> {
         /* @ts-ignore */
         modelDoc[key] = value
       })
-    const { upsertedId } = await db.collection(this.collectionName).updateOne(id, modelDoc.toDBData())
+    const { upsertedId } = await connection.db.collection(this.collectionName).updateOne(id, modelDoc.toDBData())
     assert.strictEqual(upsertedId, modelDoc._id)
     return modelDoc
   }
   async deleteOne(id: ObjectId) {
-    const dbDoc = await db.collection(this.collectionName).findOne(id)
+    const dbDoc = await connection.db.collection(this.collectionName).findOne(id)
     const modelDoc = new this.Model(dbDoc)
-    const { deletedCount } = await db.collection(this.collectionName).deleteOne(id)
+    const { deletedCount } = await connection.db.collection(this.collectionName).deleteOne(id)
     return modelDoc
   }
 }
