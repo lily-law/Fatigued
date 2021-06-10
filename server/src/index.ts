@@ -5,6 +5,11 @@ import { json, urlencoded } from 'body-parser'
 import dbConnection from './db/connection'
 import cookieSession from 'cookie-session'
 import passport from 'passport'
+import authRouter from './route/auth'
+import commentRouter from './route/comment'
+import pollRouter from './route/poll'
+import userRouter from './route/user'
+import voteRouter from './route/vote'
 
 const app = express()
 const PORT = process.env.PORT || 8000
@@ -26,15 +31,21 @@ app.use(
 app.use(passport.initialize())
 app.use(passport.session())
 
+app.use('/auth', authRouter)
+app.use('/comment', commentRouter)
+app.use('/poll', pollRouter)
+app.use('/user', userRouter)
+app.use('/vote', voteRouter)
+
 // Route client
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(path.join(__dirname, '../client/build')))
   app.get('*', (req, res, next) => {
-    res.sendFile(path.join(__dirname + '../client/build/index.html'))
+    res.sendFile(path.join(__dirname + '/../../client/build/index.html'))
   })
 } else {
   app.get('*', (req, res, next) => {
-    res.sendFile(path.join(__dirname + '../client/public/index.html'))
+    res.sendFile(path.join(__dirname + '/../../client/tmp/dev-server/index.html'))
   })
 }
 
