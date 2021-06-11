@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express'
 import { ObjectId } from 'mongodb'
 import passport from 'passport'
 import { Profile, Strategy as GoogleStrategy, VerifyCallback } from 'passport-google-oauth20'
+import isAuthed from '../middleware/isAuthed'
 import { createAuth, findAuthByAuthoriserAndId } from '../model/auth'
 import { createUser, readUser } from '../model/user'
 
@@ -40,6 +41,10 @@ router.get('/logout', function (req, res) {
   req.logOut()
   req.session = null
   res.status(200).end()
+})
+
+router.get('/', isAuthed, (req, res) => {
+  res.status(200).send()
 })
 
 async function authUser(accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) {
