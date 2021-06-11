@@ -1,9 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { AppContainer } from 'react-hot-loader'
+import { Provider } from 'react-redux'
 
 // Your top level component
 import App from './App'
+import store from './store'
 
 // Export your top level component as JSX (for static rendering)
 export default App
@@ -17,7 +19,9 @@ if (typeof document !== 'undefined') {
   const render = (Comp: Function) => {
     renderMethod(
       <AppContainer>
-        <Comp />
+        <Provider store={store}>
+          <Comp />
+        </Provider>
       </AppContainer>,
       target,
     )

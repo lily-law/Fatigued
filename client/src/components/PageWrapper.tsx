@@ -1,13 +1,22 @@
 import React from 'react'
 import { Link } from '@reach/router'
+import LoginMenu from './LoginMenu'
+import { useDispatch, useSelector } from 'react-redux'
+import { closeLoginMenu, openLoginMenu, selectLoginMenuOpen } from '../store/authSlice'
 
 const PageWrapper: React.FC = ({ children }) => {
+  const isLoginMenu = useSelector(selectLoginMenuOpen)
+  const dispatch = useDispatch()
+  const handleCloseLoginMenu = () => { dispatch(closeLoginMenu()) }
+  const handleOpenLoginMenu = () => { dispatch(openLoginMenu()) }
+
   return (
     <>
       <header>
         <h1>Fatigued</h1>
         <button>?</button>
-        <button>login/register</button>
+        <button onClick={handleOpenLoginMenu}>login/register</button>
+        {isLoginMenu && <LoginMenu setDone={handleCloseLoginMenu}/>}
         <form action="#" role="search">
           <label htmlFor="orderBy">Order by:</label>
           <select id="orderBy" aria-controls="mainContent">
