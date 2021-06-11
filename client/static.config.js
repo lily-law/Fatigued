@@ -57,6 +57,16 @@ export default {
     require.resolve('react-static-plugin-reach-router'),
     require.resolve('react-static-plugin-sitemap'),
   ],
+  devServer: {
+    proxy: {
+      "/api": {
+        "target": "http://localhost:8000",
+        "pathRewrite": {
+          "^/\\api": ""
+        }
+      }
+    }
+  },
   Document: ({
     Html,
     Head,
