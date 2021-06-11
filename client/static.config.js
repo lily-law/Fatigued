@@ -4,13 +4,27 @@ import React from 'react'
 // import { IPoll } from './types'
 
 // Typescript support in static.config.js is not yet supported, but is coming in a future update!
+const fetchInitialPolls = async () => {
+  try {
+    return await axios.get(
+      'http://localhost:8000/poll?limit=20'
+    )
+  }
+  catch(e) {
+    if (e?.code === 'ECONNREFUSED') {
+      // keep trying until server boots
+      return await fetchInitialPolls()
+    }
+    else {
+      throw e
+    }
+  }
+}
 
 export default {
   entry: path.join(__dirname, 'src', 'index.tsx'),
   getRoutes: async () => {
-    const { data: polls } /* :{ data: IPoll[] } */ = await axios.get(
-      'http://localhost:8000/poll?limit=20'
-    )
+    const { data: polls } /* :{ data: IPoll[] } */ = await fetchInitialPolls()
     return [
       {
         path: '/',
