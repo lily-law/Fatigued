@@ -1,7 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import axios from 'axios'
 
-export const authUsersAsync = createAsyncThunk('auth/authUser', async () => (await axios('/api/auth')).data)
+export const authUserAsync = createAsyncThunk('auth/authUser', async () => (await axios('/api/auth')).data)
+export const logoutUserAsync = createAsyncThunk('auth/logoutUser', async () => {
+  await axios('/api/auth/logout')
+})
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -10,8 +13,8 @@ export const authSlice = createSlice({
     loginMenuOpen: false,
     networkStatus: {
       state: 'idle',
-      statusCode: 200,
-      message: '',
+      error: null,
+      operation: '',
     },
   },
   reducers: {
@@ -23,30 +26,56 @@ export const authSlice = createSlice({
     },
     closeLoginMenu: (state) => {
       state.loginMenuOpen = false
+      state.networkStatus.state = 'idle'
+      state.networkStatus.error = null
+      state.networkStatus.operation = ''
+    },
+    setAuthPending: (state) => {
+      state.networkStatus.state = 'pending'
+      state.networkStatus.error = null
+      state.networkStatus.operation = 'authenticating'
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(authUsersAsync.pending, (state) => {
+      .addCase(authUserAsync.fulfilled, (state, action) => {
+        if (state.networkStatus.operation === 'authenticating') {
+          state.networkStatus.state = 'idle'
+          state.user = action.payload
+          state.loginMenuOpen = false
+          state.networkStatus.operation = ''
+        }
+      })
+      .addCase(authUserAsync.rejected, (state, action) => {
+        if (state.networkStatus.operation === 'authenticating') {
+          state.networkStatus.state = 'idle'
+          state.networkStatus.error = action.error
+          state.networkStatus.operation = ''
+        }
+      })
+
+      .addCase(logoutUserAsync.pending, (state) => {
         state.networkStatus.state = 'pending'
+        state.networkStatus.error = null
+        state.networkStatus.operation = 'logging out'
       })
-      .addCase(authUsersAsync.fulfilled, (state, action) => {
+      .addCase(logoutUserAsync.fulfilled, (state) => {
         state.networkStatus.state = 'idle'
-        state.networkStatus.statusCode = 200
-        state.networkStatus.message = 'Authentication successful'
-        state.user = action.payload
+        state.user = null
+        state.networkStatus.operation = ''
       })
-      .addCase(authUsersAsync.rejected, (state, action) => {
+      .addCase(logoutUserAsync.rejected, (state, action) => {
         state.networkStatus.state = 'idle'
-        state.networkStatus.statusCode = parseInt(action.error.code)
-        state.networkStatus.message = action.error.message
+        state.networkStatus.error = action.error
+        state.networkStatus.operation = ''
       })
   },
 })
 
-export const { setUser, openLoginMenu, closeLoginMenu } = authSlice.actions
+export const { setUser, openLoginMenu, closeLoginMenu, setAuthPending } = authSlice.actions
 
 export const selectAuthedUser = (state: any) => state.auth.user
 export const selectLoginMenuOpen = (state: any) => state.auth.loginMenuOpen
+export const selectAuthNetworkStatus = (state: any) => state.auth.networkStatus
 
 export default authSlice.reducer

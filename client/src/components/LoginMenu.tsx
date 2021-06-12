@@ -1,55 +1,53 @@
-import React, { useState } from 'react'
-//import axios from 'axios'
+import React, { useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import {
+  authUserAsync,
+  closeLoginMenu,
+  logoutUserAsync,
+  selectAuthNetworkStatus,
+  setAuthPending,
+} from '../store/authSlice'
 
-// const googleAuth = async ({ setDone, setError }: {setDone: () => void, setError: (msg: string) => void}) => {
-//   const requestAuth = async () => {
-//     try {
-//       const res = await axios("/api/auth");
-//       if (res.status === 200) {
-//         setDone();
-//       }
-//     } catch (error) {
-//       if (error.response.status === 401) {
-//         setError("Authentication unsuccessful, please select a google account to sign in with.")
-//       } else {
-//         setError("Woppps something went wrong!")
-//         console.error(error);
-//       }
-//     }
-//   };
-//   const googleAuthPage = window.open(
-//     `/api/auth/google`,
-//     "googleAuthPage",
-//     "onclose"
-//   );
-//   let pollWindow = setInterval(() => {
-//     if (googleAuthPage?.closed) {
-//       requestAuth();
-//       clearInterval(pollWindow);
-//     }
-//   }, 1000);
-// };
+export default () => {
+  const status = useSelector(selectAuthNetworkStatus)
+  const dispatch = useDispatch()
+  const authPageRef = useRef(null)
 
-export default ({ setDone }: { setDone: () => void }) => {
-  const [error, setError] = useState(null)
-  const handleTryAgain = () => {
-    setError(null)
-    //   googleAuth({ setDone, setError })
+  const handleCloseLoginMenu = () => {
+    dispatch(closeLoginMenu())
+    authPageRef.current?.close()
   }
-  // useEffect(() => {
-  //     googleAuth({ setDone, setError })
-  // }, [])
+  const handleCancel = () => {
+    dispatch(logoutUserAsync())
+    handleCloseLoginMenu()
+  }
+  const startGoogleAuth = async () => {
+    dispatch(setAuthPending())
+    authPageRef.current = window.open(`/api/auth/google`, 'googleAuthPage', 'onclose')
+    let pollWindow = setInterval(() => {
+      if (authPageRef.current?.closed) {
+        dispatch(authUserAsync())
+        clearInterval(pollWindow)
+      }
+    }, 1000)
+  }
+  const handleTryAgain = () => {
+    startGoogleAuth()
+  }
+
   return (
     <dialog open>
-      {error ? (
+      {status.state === 'pending' ? (
+        <div>loading...</div>
+      ) : status.error ? (
         <>
-          <p>{error}</p>
+          <p>{status.error.message}</p>
           <button onClick={handleTryAgain}>Try again</button>
-          <button onClick={() => setDone()}>Cancel</button>
         </>
       ) : (
-        <iframe src="/api/auth/google" />
+        <button onClick={startGoogleAuth}>Login or Register via Google</button>
       )}
+      <button onClick={handleCancel}>Cancel</button>
     </dialog>
   )
 }
