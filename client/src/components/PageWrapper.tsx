@@ -7,8 +7,12 @@ import { closeLoginMenu, openLoginMenu, selectLoginMenuOpen } from '../store/aut
 const PageWrapper: React.FC = ({ children }) => {
   const isLoginMenu = useSelector(selectLoginMenuOpen)
   const dispatch = useDispatch()
-  const handleCloseLoginMenu = () => { dispatch(closeLoginMenu()) }
-  const handleOpenLoginMenu = () => { dispatch(openLoginMenu()) }
+  const handleCloseLoginMenu = () => {
+    dispatch(closeLoginMenu())
+  }
+  const handleOpenLoginMenu = () => {
+    dispatch(openLoginMenu())
+  }
 
   return (
     <>
@@ -16,7 +20,7 @@ const PageWrapper: React.FC = ({ children }) => {
         <h1>Fatigued</h1>
         <button>?</button>
         <button onClick={handleOpenLoginMenu}>login/register</button>
-        {isLoginMenu && <LoginMenu setDone={handleCloseLoginMenu}/>}
+        {isLoginMenu && <LoginMenu setDone={handleCloseLoginMenu} />}
         <form action="#" role="search">
           <label htmlFor="orderBy">Order by:</label>
           <select id="orderBy" aria-controls="mainContent">

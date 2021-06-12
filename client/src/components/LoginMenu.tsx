@@ -30,24 +30,26 @@ import React, { useState } from 'react'
 //   }, 1000);
 // };
 
-export default ({setDone}: {setDone: () => void}) => {
-    const [error, setError] = useState(null)
-    const handleTryAgain = () => {
-        setError(null)
-     //   googleAuth({ setDone, setError })
-    }
-    // useEffect(() => {
-    //     googleAuth({ setDone, setError })
-    // }, [])
-    return (
-        <dialog open> 
-            { error ? <>
-                <p>{error}</p>
-                <button onClick={handleTryAgain}>Try again</button>
-                <button onClick={() => setDone()}>Cancel</button>
-                </> :
-                <iframe src="/api/auth/google" />
-            }
-        </dialog>
-    )
+export default ({ setDone }: { setDone: () => void }) => {
+  const [error, setError] = useState(null)
+  const handleTryAgain = () => {
+    setError(null)
+    //   googleAuth({ setDone, setError })
+  }
+  // useEffect(() => {
+  //     googleAuth({ setDone, setError })
+  // }, [])
+  return (
+    <dialog open>
+      {error ? (
+        <>
+          <p>{error}</p>
+          <button onClick={handleTryAgain}>Try again</button>
+          <button onClick={() => setDone()}>Cancel</button>
+        </>
+      ) : (
+        <iframe src="/api/auth/google" />
+      )}
+    </dialog>
+  )
 }
