@@ -279,7 +279,6 @@
   dependencies:
     "anymatch" "~3.1.1"
     "braces" "~3.0.2"
-    "fsevents" "~2.3.1"
     "glob-parent" "~5.1.0"
     "is-binary-path" "~2.1.0"
     "is-glob" "~4.0.1"
@@ -915,9 +914,9 @@
   "version" "3.0.0"
 
 "normalize-url@^4.1.0":
-  "integrity" "sha512-2s47yzUxdexf1OhyRi4Em83iQk0aPvwTddtFz4hnSSw9dCEsLEGf6SwIO8ss/19S9iBb5sJaOuTvTGDeZI00BQ=="
-  "resolved" "https://registry.npmjs.org/normalize-url/-/normalize-url-4.5.0.tgz"
-  "version" "4.5.0"
+  "integrity" "sha512-9UZCFRHQdNrfTpGg8+1INIg93B6zE0aXMVFkw1WFwvO4SlZywU6aLg5Of0Ap/PgcbSw4LNxvMWXMeugwMCX0AA=="
+  "resolved" "https://registry.npmjs.org/normalize-url/-/normalize-url-4.5.1.tgz"
+  "version" "4.5.1"
 
 "oauth@0.9.x":
   "integrity" "sha1-vR/vr2hslrdUda7VGWQS/2DPucE="
