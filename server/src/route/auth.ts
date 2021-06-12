@@ -44,7 +44,7 @@ router.get('/logout', function (req, res) {
 })
 
 router.get('/', isAuthed, (req, res) => {
-  res.status(200).send()
+  res.status(200).send(req.user)
 })
 
 async function authUser(accessToken: string, refreshToken: string, profile: Profile, done: VerifyCallback) {
